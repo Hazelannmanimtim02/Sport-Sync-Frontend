@@ -36,3 +36,9 @@
     }
 }
 
+@layer components {
+    .page-title {
+        @apply text-2xl font-body font-semibold mb-6;
+    }
+}
+

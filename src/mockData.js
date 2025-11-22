@@ -26,6 +26,16 @@ export const products = [
   { id: 8, barcode: "SP1008", product_name: "Fitness Band", category_id: 4, cost_price: 8, selling_price: 20, quantity: 45 },
   { id: 9, barcode: "SP1009", product_name: "Jersey Team A", category_id: 3, cost_price: 20, selling_price: 50, quantity: 0 },
   { id: 10, barcode: "SP1010", product_name: "Dumbbells 5kg", category_id: 5, cost_price: 25, selling_price: 50, quantity: 10 },
+  { id: 11, barcode: "SP1011", product_name: "Basketball Pro 3000", category_id: 2, cost_price: 30, selling_price: 60, quantity: 15 },
+  { id: 12, barcode: "SP1012", product_name: "Soccer Ball Elite", category_id: 2, cost_price: 25, selling_price: 50, quantity: 0 },
+  { id: 13, barcode: "SP1013", product_name: "Tennis Racket X1", category_id: 4, cost_price: 40, selling_price: 80, quantity: 8 },
+  { id: 14, barcode: "SP1014", product_name: "Gym Mat 200cm", category_id: 5, cost_price: 30, selling_price: 70, quantity: 5 },
+  { id: 15, barcode: "SP1015", product_name: "Adidas Running Shirt", category_id: 3, cost_price: 18, selling_price: 35, quantity: 50 },
+  { id: 16, barcode: "SP1016", product_name: "Soccer Socks Pack", category_id: 1, cost_price: 5, selling_price: 12, quantity: 100 },
+  { id: 17, barcode: "SP1017", product_name: "Resistance Bands Set", category_id: 5, cost_price: 12, selling_price: 25, quantity: 20 },
+  { id: 18, barcode: "SP1018", product_name: "Water Bottle 1L", category_id: 4, cost_price: 4, selling_price: 10, quantity: 75 },
+  { id: 19, barcode: "SP1019", product_name: "Basketball Jersey Team B", category_id: 3, cost_price: 22, selling_price: 45, quantity: 30 },
+  { id: 20, barcode: "SP1020", product_name: "Running Shorts", category_id: 3, cost_price: 15, selling_price: 30, quantity: 40 },
 ];
 
 const randomInt = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;

@@ -1,9 +1,10 @@
 import Layout from "../components/Layout";
 
 export default function Inventory() {
+  
   return (
     <Layout>
-        {/* code here */}
+      <h1 className="page-title">Inventory</h1>
     </Layout>
   );
 }
