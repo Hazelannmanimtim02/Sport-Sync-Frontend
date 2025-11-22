@@ -64,3 +64,30 @@ todaysTransactions.forEach((t) => {
 export const todayCategoryNames = Object.keys(todayCategoryVolume);
 export const todayCategoryVolumeValues = Object.values(todayCategoryVolume);
 export const todayCategoryRevenueValues = Object.values(todayCategoryRevenue);
+
+// ------------------------------
+// Dashboard - Cards
+// ------------------------------
+export const getCategoryMap = (categories) => {
+  return categories.reduce((acc, cat) => {
+    acc[cat.id] = cat.category_name;
+    return acc;
+  }, {});
+};
+
+export const getStockAlerts = (products) => {
+  return products.filter(p => p.quantity === 0);
+};
+
+export const getTopSellingProducts = (products, transactions, topN = 10) => {
+  const productSales = products.map(p => {
+    const soldQuantity = transactions
+      .filter(t => t.product_id === p.id)
+      .reduce((acc, t) => acc + t.quantity, 0);
+    return { ...p, soldQuantity };
+  });
+
+  return productSales
+    .sort((a, b) => b.soldQuantity - a.soldQuantity)
+    .slice(0, topN);
+};
