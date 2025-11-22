@@ -24,8 +24,8 @@ export const products = [
   { id: 6, barcode: "SP1006", product_name: "Volleyball", category_id: 2, cost_price: 15, selling_price: 30, quantity: 35 },
   { id: 7, barcode: "SP1007", product_name: "Running Shoes", category_id: 1, cost_price: 60, selling_price: 120, quantity: 20 },
   { id: 8, barcode: "SP1008", product_name: "Fitness Band", category_id: 4, cost_price: 8, selling_price: 20, quantity: 45 },
-  { id: 9, barcode: "SP1009", product_name: "Jersey Team A", category_id: 3, cost_price: 20, selling_price: 50, quantity: 40 },
-  { id: 10, barcode: "SP1010", product_name: "Dumbbells 5kg", category_id: 5, cost_price: 25, selling_price: 50, quantity: 15 },
+  { id: 9, barcode: "SP1009", product_name: "Jersey Team A", category_id: 3, cost_price: 20, selling_price: 50, quantity: 0 },
+  { id: 10, barcode: "SP1010", product_name: "Dumbbells 5kg", category_id: 5, cost_price: 25, selling_price: 50, quantity: 10 },
 ];
 
 const randomInt = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
@@ -38,7 +38,7 @@ export const transactions = Array.from({ length: 50 }, (_, i) => {
   const total_amount = product.selling_price * quantity;
   const paymentMethods = ["Cash", "Card", "Online"];
   const payment_method = paymentMethods[randomInt(0, 2)];
-  const amount_paid = total_amount + randomInt(0, 20); // may include extra cash
+  const amount_paid = total_amount + randomInt(0, 20); 
   const change_due = amount_paid - total_amount;
   const remarks = "";
 
@@ -56,7 +56,7 @@ export const transactions = Array.from({ length: 50 }, (_, i) => {
   };
 });
 
-// SALES SUMMARY (computed from transactions)
+// SALES SUMMARY 
 export const sales = {
   daily: Array.from({ length: 10 }, (_, i) => {
     const date = `2025-11-${10 + i}`;
