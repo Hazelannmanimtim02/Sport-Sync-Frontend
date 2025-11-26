@@ -1,4 +1,5 @@
 import Layout from "../components/Layout";
+import ProfitAnalysis from "../components/ProfitAnalysis";
 import Table from "../components/Table";
 import KpiCard from "../components/KpiCard";
 import { products, categories } from "../mockData";
@@ -127,5 +128,6 @@ export default function Inventory() {
       </div>
 
     </Layout>
+    
   );
 };
