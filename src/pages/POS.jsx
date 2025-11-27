@@ -6,11 +6,13 @@ import Product from "../components/pos/Product.jsx";
 import { products, categories } from "../mockData";
 import CartItem from "../components/pos/CartItem";
 import { ShoppingCart } from "lucide-react";
+import Toast from "../components/Toast";
 
 export default function POS() {
   const [filtered, setFiltered] = useState(products);
   const [activeCategory, setActiveCategory] = useState("All");
   const [cart, setCart] = useState([]);
+  const [toast, setToast] = useState(null);
 
   useEffect(() => {
     setFiltered(
@@ -43,6 +45,11 @@ export default function POS() {
   }
 
   const addToCart = (product) => {
+    if (product.quantity === 0) {
+      setToast({ message: "Product is out of stock!", type: "error" });
+      return;
+    }
+
     setCart((prev) => {
       const existing = prev.find((item) => item.id === product.id);
       if (existing) {
@@ -142,6 +149,14 @@ export default function POS() {
 </div>
 
       </div>
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          duration={2000}
+          onClose={() => setToast(null)}
+        />
+      )}
     </Layout>
   );
 }
