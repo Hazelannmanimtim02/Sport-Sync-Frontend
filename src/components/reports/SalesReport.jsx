@@ -4,73 +4,39 @@ import Chart from "../../components/Chart";
 import Table from "../../components/Table";
 import { DollarSign, ShoppingCart, Activity, Star } from "lucide-react";
 import { products, sales, categories, transactions } from "../../mockData";
-// import CalendarFilter from "../../components/CalendarFilter";
 
-const todayCategoryNames = categories.map((c) => c.category_name);
-const todayCategoryVolumeValues = categories.map((c) =>
-  transactions
-    .filter((t) => t.date.toISOString().startsWith("2025-11-20")) // example date
-    .filter(
-      (t) =>
-        categories.find(
-          (cat) =>
-            cat.id === products.find((p) => p.id === t.product_id).category_id
-        )?.id === c.id
-    )
-    .reduce((acc, t) => acc + t.quantity, 0)
-);
-
-// Line Chart - Sales & Revenue Trend
+// ... (Keep Data Preparation logic same as before) ...
+// 1. Line Chart Data
 const lineDates = sales.daily.map((d) => d.date);
 const salesTrend = sales.daily.map((d) => d.volume);
 const revenueTrend = sales.daily.map((d) => d.revenue);
 
-// Bar Chart - Sales by Category
-const barCategoryNames = categories.map((c) => c.category_name);
-const barCategorySales = categories.map((c) =>
-  transactions
-    .filter(
-      (t) =>
-        categories.find(
-          (cat) =>
-            cat.id === products.find((p) => p.id === t.product_id).category_id
-        )?.id === c.id
-    )
-    .reduce((acc, t) => acc + t.quantity, 0)
-);
+// 2. Category Metrics
+const categoryMetrics = categories.map((c) => {
+  const catTransactions = transactions.filter(
+    (t) =>
+      categories.find(
+        (cat) =>
+          cat.id === products.find((p) => p.id === t.product_id).category_id
+      )?.id === c.id
+  );
 
-// Donut Chart - Payment Methods
-const paymentMethods = ["Cash", "Card", "Online"];
+  return {
+    name: c.category_name,
+    revenue: catTransactions.reduce((acc, t) => acc + t.total_amount, 0),
+    volume: catTransactions.reduce((acc, t) => acc + t.quantity, 0),
+    transactions: catTransactions.length,
+  };
+});
+const categoryNames = categoryMetrics.map((m) => m.name);
+
+// 3. Payment Methods
+const paymentMethods = ["Cash", "Card", "GCash"];
 const paymentCounts = paymentMethods.map(
   (method) => transactions.filter((t) => t.payment_method === method).length
 );
 
-// Bar Chart - Category Performance Comparison (Revenue vs Volume)
-const categoryRevenue = categories.map((c) =>
-  transactions
-    .filter(
-      (t) =>
-        categories.find(
-          (cat) =>
-            cat.id === products.find((p) => p.id === t.product_id).category_id
-        )?.id === c.id
-    )
-    .reduce((acc, t) => acc + t.total_amount, 0)
-);
-const categoryVolume = categories.map((c) =>
-  transactions
-    .filter(
-      (t) =>
-        categories.find(
-          (cat) =>
-            cat.id === products.find((p) => p.id === t.product_id).category_id
-        )?.id === c.id
-    )
-    .reduce((acc, t) => acc + t.quantity, 0)
-);
-
-// Top Selling Products
-
+// 4. Products Table Data
 const categoryMap = categories.reduce((acc, c) => {
   acc[c.id] = c.category_name;
   return acc;
@@ -97,21 +63,19 @@ const productSales = products.map((p) => {
     Profit: `₱${profit.toLocaleString()}`,
     "Margin %": (
       <span
-        className={
+        className={`font-medium ${
           margin >= 50
-            ? "text-green-600"
+            ? "text-emerald-600"
             : margin < 30
-            ? "text-red-500"
-            : "text-yellow-500"
-        }
+            ? "text-rose-500"
+            : "text-amber-500"
+        }`}
       >
-        {margin.toFixed(2)}%
+        {margin.toFixed(1)}%
       </span>
     ),
   };
 });
-
-// Sort by quantity sold or revenue
 const topProducts = productSales
   .sort((a, b) => b["Quantity Sold"] - a["Quantity Sold"])
   .slice(0, 10);
@@ -127,150 +91,146 @@ const columns = [
 
 export default function SalesReport() {
   const [trendFilter, setTrendFilter] = useState("both");
+  const [categoryFilter, setCategoryFilter] = useState("revenue");
 
-  // Valid colors
-const SALES_COLOR = "#002B50";       // or "#000080"
-const REVENUE_COLOR = "#006400";  // dark green hex
+  // Colors
+  const COLORS = {
+    navy: "#002B50",
+    green: "#1f781a",
+    amber: "#f59e0b",
+  };
 
-const filteredTrendSeries =
-  trendFilter === "sales"
-    ? [{ name: "Sales", data: salesTrend, color: SALES_COLOR }]
-    : trendFilter === "revenue"
-    ? [{ name: "Revenue", data: revenueTrend, color: REVENUE_COLOR }]
-    : [
-        { name: "Sales", data: salesTrend, color: SALES_COLOR },
-        { name: "Revenue", data: revenueTrend, color: REVENUE_COLOR },
-      ];
+  // Logic for Trend Chart
+  const filteredTrendSeries =
+    trendFilter === "sales"
+      ? [{ name: "Sales Volume", data: salesTrend, color: COLORS.navy }]
+      : trendFilter === "revenue"
+      ? [{ name: "Revenue", data: revenueTrend, color: COLORS.green }]
+      : [
+          { name: "Sales Volume", data: salesTrend, color: COLORS.navy },
+          { name: "Revenue", data: revenueTrend, color: COLORS.green },
+        ];
+
+  // Logic for Category Chart
+  const categoryChartData = () => {
+    switch (categoryFilter) {
+      case "revenue":
+        return [{ name: "Revenue", data: categoryMetrics.map((m) => m.revenue), color: COLORS.green }];
+      case "volume":
+        return [{ name: "Volume", data: categoryMetrics.map((m) => m.volume), color: COLORS.navy }];
+      case "transactions":
+        return [{ name: "Transactions", data: categoryMetrics.map((m) => m.transactions), color: COLORS.amber }];
+      default:
+        return [];
+    }
+  };
 
   return (
-    <div className="flex flex-col space-y-5">
-      <div className="flex justify-end">
-        {/* insert calendar and export button here */}
-      </div>
-
-      {/* KPI */}
+    <div className="flex flex-col space-y-6">
+      
+      {/* 1. KPI Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        {/* Total Sales Revenue */}
         <KpiCard
-          bgColor="#FAFAFA"
-          title="Total Sales Revenue"
+          bgColor={COLORS.navy}
+          title="Total Revenue"
           icon={<DollarSign />}
-          value={<>100, 000</>}
-          description={<>Total revenue generated</>}
+          value="₱100k"
+          description="Total revenue generated"
         />
-
-        {/* Transactions */}
         <KpiCard
-          bgColor="#FAFAFA"
+          bgColor={COLORS.navy}
           title="Transactions"
           icon={<ShoppingCart />}
-          value={<>10</>}
-          description={<>Completed transactions</>}
+          value="142"
+          description="Completed orders"
         />
-
-        {/* Average Transaction */}
         <KpiCard
-          bgColor="#FAFAFA"
-          title="Average Transaction"
+          bgColor={COLORS.green}
+          title="Avg. Transaction"
           icon={<Activity />}
-          value={<>2</>}
-          description={<>Per transaction</>}
+          value="₱704"
+          description="Per order value"
         />
-
-        {/* Top Payment */}
         <KpiCard
-          bgColor="#FAFAFA"
+          bgColor={COLORS.green}
           title="Top Payment"
           icon={<Star />}
-          value={<>Cash</>}
-          description={<>Most used method</>}
+          value="Cash"
+          description="35% of all orders"
         />
       </div>
 
-      {/* Charts */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
-        <div className="flex flex-col default-container">
-          <div className="flex justify-between items-center mb-2">
-            <h2 className="font-semibold text-gray-600 text-lg">
-              Sales & Revenue Trend
-            </h2>
-
-            <div className="relative group">
-              <select
-                value={trendFilter}
-                onChange={(e) => setTrendFilter(e.target.value)}
-                className="w-full appearance-none border border-gray-200 rounded-xl p-2 pr-10 text-gray-800 font-medium focus:ring-2 focus:ring-navyBlue/30 focus:border-navyBlue transition-all duration-200 cursor-pointer shadow-sm hover:shadow-md group-hover:border-gray-300"
-              >
-                <option value="both" className="p-2">
-                  Sales & Revenue
-                </option>
-                <option value="sales" className="p-2">
-                  Sales
-                </option>
-                <option value="revenue" className="p-2">
-                  Revenue
-                </option>
-              </select>
-              <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
-                <svg
-                  className="w-4 h-4 text-gray-500 transition-transform duration-200 group-hover:translate-y-0.5"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M19 9l-7 7-7-7"
-                  />
-                </svg>
-              </div>
-            </div>
-          </div>
-
-          <Chart
+      {/* 2. Top Row Charts */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        
+        {/* Trend Analysis */}
+        <Chart
             type="line"
+            title="Trend Analysis"
             categories={lineDates}
             series={filteredTrendSeries}
-            height={320}
+            height={340}
+            // Pass the dropdown as a prop
+            filter={
+                <select
+                    value={trendFilter}
+                    onChange={(e) => setTrendFilter(e.target.value)}
+                    className="appearance-none bg-slate-50 border border-slate-200 text-slate-700 text-sm font-medium rounded-lg py-2 pl-3 pr-8 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#002B50]/20 cursor-pointer hover:border-slate-300 transition-colors"
+                >
+                    <option value="both">All Metrics</option>
+                    <option value="sales">Sales Volume</option>
+                    <option value="revenue">Revenue</option>
+                </select>
+            }
+        />
+
+        {/* Category Performance */}
+        <Chart
+            type="bar"
+            title="Category Performance"
+            categories={categoryNames}
+            series={categoryChartData()}
+            height={340}
+            // Pass the dropdown as a prop
+            filter={
+                <select
+                    value={categoryFilter}
+                    onChange={(e) => setCategoryFilter(e.target.value)}
+                    className="appearance-none bg-slate-50 border border-slate-200 text-slate-700 text-sm font-medium rounded-lg py-2 pl-3 pr-8 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#002B50]/20 cursor-pointer hover:border-slate-300 transition-colors"
+                >
+                    <option value="revenue">By Revenue</option>
+                    <option value="volume">By Volume</option>
+                    <option value="transactions">By Transactions</option>
+                </select>
+            }
+        />
+      </div>
+
+      {/* 3. Bottom Row */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        
+        {/* Payment Donut */}
+        <div className="lg:col-span-1">
+           <Chart
+            type="donut"
+            title="Payment Distribution"
+            categories={["Cash", "Card", "GCash"]}
+            series={paymentCounts}
+            height={360}
           />
         </div>
 
-        <Chart
-          type="bar"
-          title="Sales by Category"
-          categories={barCategoryNames}
-          series={[{ name: "Sales Volume", data: barCategorySales }]}
-          height={320}
-        />
+        {/* Top Products Table */}
+        <div className="lg:col-span-2">
+          <Table
+            tableName="Top Selling Products"
+            columns={columns}
+            data={topProducts}
+            rowsPerPage={5}
+          />
+        </div>
 
-        <Chart
-          type="donut"
-          title="Payment Methods"
-          categories={["Cash", "GCash"]}
-          series={[35, 25]}
-          height={320}
-        />
-
-        <Chart
-          type="bar"
-          title="Category Performance Comparison"
-          categories={barCategoryNames}
-          series={[
-            { name: "Revenue", data: categoryRevenue },
-            { name: "Volume", data: categoryVolume },
-          ]}
-          height={320}
-        />
       </div>
-
-      <Table
-        tableName="Top Selling Products"
-        columns={columns}
-        data={topProducts}
-        rowsPerPage={10}
-      />
     </div>
   );
 }

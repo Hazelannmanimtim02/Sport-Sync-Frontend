@@ -46,6 +46,10 @@
         @apply text-xl sm:text-2xl md:text-3xl font-bold text-charcoalBlack mb-6 lg:mb-4;
     }
 
+    .title {
+      @apply text-navyBlue font-bold text-lg tracking-tight;
+    }
+
     .default-container {
         @apply p-6 bg-softWhite border border-gray-300 rounded-2xl shadow-sm;
     }
