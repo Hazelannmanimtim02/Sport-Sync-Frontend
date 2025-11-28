@@ -184,9 +184,9 @@ export default function Dashboard() {
                     Top 10 Selling Products
                 </h3>
             </div>
-            <div className="p-4 overflow-y-auto max-h-[400px]">
+            <div className="p-4 overflow-y-auto max-h-[400px] hide-scrollbar">
                 {topSelling.map((p, index) => (
-                  <div key={p.id} className="group flex items-center gap-4 p-3 hover:bg-slate-50 rounded-lg transition-colors">
+                  <div key={p.id} className="group flex items-center gap-4 p-3 hover:bg-slate-100 rounded-lg transition-colors">
                       {/* Rank Badge */}
                       <span className={`w-8 h-8 shrink-0 flex items-center justify-center rounded-lg font-bold text-sm 
                           ${index < 3 ? 'bg-navyBlue text-white' : 'bg-slate-100 text-slate-600'}`}>
