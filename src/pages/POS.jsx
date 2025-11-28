@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import Layout from "../components/Layout";
 import Scanner from "../components/Scanner";
-import Search from "../components/Search";
 import CategoryButton from "../components/pos/CategoryButton.jsx";
 import Product from "../components/pos/Product.jsx";
 import { products, categories } from "../mockData";
@@ -110,9 +109,7 @@ export default function POS() {
 <div className="shrink-0 mt-16 lg:mt-0 w-full mb-4 relative z-10"> 
   <div className="flex items-center gap-3 w-full">
     {/* Search Component */}
-    <div className="flex-1">
-      <Search />
-    </div>
+    
 
     {/* Scanner Component */}
     <div className="shrink-0">
